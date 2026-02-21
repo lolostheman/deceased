@@ -1,0 +1,56 @@
+services:
+  minecraft:
+    image: itzg/minecraft-server:java21
+    container_name: mc-deceased-craft
+    restart: unless-stopped
+    ports:
+      - "25565:25565"
+      - "25575:25575"
+    environment:
+      EULA: "TRUE"
+      DIFFICULTY: "hard"
+      FORCE_GAMEMODE: "TRUE"
+      ONLINE_MODE: "FALSE"
+
+      TYPE: "AUTO_CURSEFORGE"
+      CF_API_KEY: ${CF_API_KEY}
+      CF_PAGE_URL: "https://www.curseforge.com/minecraft/modpacks/deceasedcraft"
+      CF_FILE_ID: "7623218"
+      CF_FORCE_SYNCHRONIZE: "true"
+
+      ENABLE_RCON: "true"
+      RCON_PORT: "25575"
+      RCON_PASSWORD: ${RCON_PASSWORD}
+
+      MEMORY: ${MC_MEMORY}
+
+    volumes:
+      - ./persist/mc-data:/data
+      - ./server-icon.png:/data/server-icon.png:ro
+
+  rcon-bot:
+    build:
+      context: ./rcon-bot
+    container_name: mc-rcon-bot
+    restart: unless-stopped
+    depends_on:
+      - minecraft
+    environment:
+      RCON_HOST: "minecraft"
+      RCON_PORT: 25575
+      RCON_PASSWORD: "${RCON_PASSWORD}"
+
+      # where we persist player json
+      PLAYER_JSON_PATH: "/data/player_names.json"
+
+      # log file to tail (Forge usually writes latest.log here)
+      LOG_PATH: "/data/logs/latest.log"
+
+      # world folder location (inside /data)
+      WORLD_PATH: "/data/world"
+    volumes:
+      # Mount the same /data so the bot can read logs and reset the world/json
+      - ./persist/mc-data:/data
+      - /var/run/docker.sock:/var/run/docker.sock
+      # Optional: explicit bind of player_names.json if you want it as a standalone file too
+      # - ./persist/player_names.json:/data/player_names.json
