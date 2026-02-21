@@ -378,7 +378,7 @@ def send_command(rcon, command, commands=None):
 def reset_run():
 
     client = docker.from_env()
-    mc = client.containers.get("mc-bettermc")
+    mc = client.containers.get("mc-deceased-craft")
     mc.stop(timeout=30)
 
     """Deletes the Minecraft world folder to reset the world."""
