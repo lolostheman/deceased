@@ -10,7 +10,7 @@ services:
       EULA: "TRUE"
       DIFFICULTY: "hard"
       FORCE_GAMEMODE: "TRUE"
-      ONLINE_MODE: "FALSE"
+      ONLINE_MODE: "TRUE"
 
       TYPE: "AUTO_CURSEFORGE"
       CF_API_KEY: ${CF_API_KEY}
